@@ -1,52 +1,65 @@
-const express = require ('express');
-const cors = require('cors')
-const bodyParser = require('body-parser')
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
 
 main().catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/users');
-  console.log('db connected')
+    await mongoose.connect('mongodb://127.0.0.1:27017/users');
+    console.log('db connected');
 
-  // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
+    // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 }
 
-//schema
+// Schema
 const userSchema = new mongoose.Schema({
-    id: String,
+    name: String,  // Add name field to the schema
     username: String,
     password: String
-  });
+});
 
-//model
+// Model
 const User = mongoose.model('User', userSchema);
-
-
-
 
 const server = express();
 
-//middleware
+// Middleware
 server.use(cors());
-server.use(bodyParser.json())
+server.use(bodyParser.json());
 
-//api
-server.post('/user',async(req,res)=>{
+// API
+server.post('/user', async (req, res) => {
+    const { name, email, password } = req.body;
 
-    let user= new User()
-    user.name=req.body.name
-    user.username=req.body.email
-    user.password=req.body.password
-   const doc= await user.save()
+    let user = new User({
+        name: name,
+        username: email,
+        password: password
+    });
 
-    console.log(doc)
-    res.json(doc)
+    try {
+        const doc = await user.save();
+        console.log(doc);
+        res.status(201).json(doc);
+    } catch (error) {
+        console.error('Error saving user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
-})
+server.get('/user', async (req, res) => {
+    try {
+        const users = await User.find({});
+        console.log(users);
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
-//port
-server.listen(8080,()=>{
-    console.log('server is started')
-})
+// Port
+server.listen(8080, () => {
+    console.log('server is started');
+});
