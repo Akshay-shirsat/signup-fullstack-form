@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
+    
 main().catch(err => console.log(err));
 
 async function main() {
@@ -14,7 +14,7 @@ async function main() {
 
 // Schema
 const userSchema = new mongoose.Schema({
-    name: String,  // Add name field to the schema
+    name: String,  // Add name field to the schema 
     username: String,
     password: String
 });
@@ -59,7 +59,7 @@ server.get('/user', async (req, res) => {
     }
 });
 
-// Port
+// Port 
 server.listen(8080, () => {
     console.log('server is started');
 });
